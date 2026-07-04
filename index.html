@@ -3,133 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกรายรับ-รายจ่าย ร้านตัดผม</title>
+    <title>BARBER_OS // ระบบบันทึกรายรับ-รายจ่าย</title>
+    <!-- โหลดฟอนต์สไตล์ไซเบอร์และภาษาไทยสำหรับโมดูลอนาคต -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient-start: #111827;
-            --bg-gradient-end: #1f2937;
-            --card-bg: #ffffff;
-            --text-dark: #1f2937;
-            --text-light: #f9fafb;
-            --text-muted: #4b5563;
-            --primary: #b45309; /* Vintage Barber Amber/Gold */
-            --primary-hover: #92400e;
-            --income-color: #10b981;
-            --income-bg: #ecfdf5;
-            --expense-color: #ef4444;
-            --expense-bg: #fef2f2;
-            --border-color: #e5e7eb;
-            --focus-ring: #f59e0b;
+            --bg-color: #05050a;
+            --cyber-cyan: #00f0ff;
+            --cyber-pink: #ff0055;
+            --cyber-yellow: #ffea00;
+            --cyber-green: #39ff14;
+            --glass-bg: rgba(10, 10, 20, 0.75);
+            --glass-border: rgba(0, 240, 255, 0.2);
+            --text-neon: #e0e0ff;
+            --text-dark: #0a0a0f;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Prompt', 'Sarabun', system-ui, -apple-system, sans-serif;
+            font-family: 'Prompt', 'Orbitron', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: #111827;
-            color: var(--text-light);
-            padding: 30px 24px;
-            text-align: center;
-            border-bottom: 4px solid var(--primary);
+            padding: 30px 20px;
+            color: var(--text-neon);
+            overflow-x: hidden;
             position: relative;
         }
 
-        .header::after {
+        /* เอฟเฟกต์แสงไฟ Neon เรืองแสงด้านหลังกระจก */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--cyber-pink);
+            filter: blur(150px);
+            top: 10%;
+            left: 15%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: var(--cyber-cyan);
+            filter: blur(180px);
+            bottom: 10%;
+            right: 15%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid var(--glass-border);
+            border-radius: 4px; /* ดีไซน์เหลี่ยมขอบอุตสาหกรรมไซเบอร์ */
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* มุมเทคโนโลยีเหลี่ยมตัด (Cyber Tech Corners) */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 15px;
+            height: 15px;
+            border-top: 3px solid var(--cyber-cyan);
+            border-left: 3px solid var(--cyber-cyan);
+        }
+
+        .container::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #ef4444 25%, #f9fafb 25%, #f9fafb 50%, #3b82f6 50%, #3b82f6 75%, #f9fafb 75%);
-            background-size: 40px 4px;
+            width: 15px;
+            height: 15px;
+            border-bottom: 3px solid var(--cyber-pink);
+            border-right: 3px solid var(--cyber-pink);
+        }
+
+        /* Header Futuristic Dashboard */
+        .header {
+            padding: 35px 25px 20px 25px;
+            text-align: center;
+            border-bottom: 1px dashed var(--glass-border);
+            position: relative;
         }
 
         .header h1 {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 10px var(--cyber-cyan), 0 0 20px rgba(0, 240, 255, 0.5);
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
         .header p {
-            font-size: 0.9rem;
-            color: #9ca3af;
+            font-size: 0.85rem;
+            color: var(--cyber-cyan);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            opacity: 0.8;
+        }
+
+        /* เส้นสแกนเรดาร์วิ่งผ่าน (Scanline Animation) */
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyber-cyan), transparent);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-150px); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(150px); opacity: 0; }
         }
 
         form {
-            padding: 28px 24px;
+            padding: 30px 25px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            position: relative;
         }
 
         label {
             display: block;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 8px;
+            color: var(--cyber-cyan);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(0, 240, 255, 0.4);
         }
 
-        /* Input Styles */
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="time"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            color: var(--text-dark);
-            background-color: #f9fafb;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary);
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.15);
-        }
-
-        /* Transaction Type Toggle (Segmented Control) */
+        /* Futuristic Segmented Radio Control */
         .type-toggle {
             display: flex;
-            background: #f3f4f6;
-            padding: 4px;
-            border-radius: 10px;
-            gap: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 5px;
+            gap: 5px;
         }
 
         .type-option {
@@ -145,154 +192,211 @@
             display: block;
             padding: 12px;
             margin-bottom: 0;
-            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            transition: all 0.3s ease;
             background: transparent;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.4);
+            border: 1px solid transparent;
+            text-shadow: none;
         }
 
         #type-income:checked + label {
-            background: var(--income-color);
-            color: white;
-            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+            background: rgba(57, 255, 20, 0.1);
+            color: var(--cyber-green);
+            border: 1px solid var(--cyber-green);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+            text-shadow: 0 0 5px var(--cyber-green);
         }
 
         #type-expense:checked + label {
-            background: var(--expense-color);
-            color: white;
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+            background: rgba(255, 0, 85, 0.1);
+            color: var(--cyber-pink);
+            border: 1px solid var(--cyber-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+            text-shadow: 0 0 5px var(--cyber-pink);
         }
 
-        /* Row Layout for Date and Time */
+        /* Responsive Grid Row Layout */
         .form-row {
             display: flex;
-            gap: 16px;
+            gap: 20px;
         }
 
         .form-row .form-group {
             flex: 1;
         }
 
+        /* Input Elements Overhaul */
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        select,
         textarea {
-            resize: vertical;
-            min-height: 80px;
+            width: 100%;
+            padding: 14px;
+            background: rgba(5, 5, 10, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 0; 
+            font-size: 0.95rem;
+            color: #fff;
+            outline: none;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
         }
 
-        /* Currency Container */
+        /* ดัดแปลงสีไอคอนปฏิทินของเบราว์เซอร์ให้เข้ากับธีม */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(145deg);
+            cursor: pointer;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--cyber-cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+            background: rgba(15, 15, 30, 0.8);
+        }
+
+        select option {
+            background: #0f0f1a;
+            color: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        /* Neon Currency Input Module */
         .amount-container {
             position: relative;
         }
 
         .amount-container input {
-            padding-right: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding-right: 60px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--cyber-yellow);
+            border-color: rgba(255, 234, 0, 0.2);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .amount-container input:focus {
+            border-color: var(--cyber-yellow);
+            box-shadow: 0 0 12px rgba(255, 234, 0, 0.4);
         }
 
         .amount-container::after {
-            content: 'บาท';
+            content: 'THB';
             position: absolute;
-            right: 14px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--cyber-yellow);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
         }
 
-        /* Submit Button */
+        /* Cyberpunk Button Interaction */
         button[type="submit"] {
             width: 100%;
-            padding: 14px;
-            background-color: #111827;
-            color: white;
-            border: none;
-            border-radius: 8px;
+            padding: 16px;
+            background: transparent;
+            color: var(--cyber-cyan);
+            border: 2px solid var(--cyber-cyan);
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-            border-bottom: 3px solid var(--primary);
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+            margin-top: 15px;
         }
 
-        button[type="submit"]:hover {
-            background-color: #1f2937;
-            transform: translateY(-1px);
+        button[type="submit"]:hover:not(:disabled) {
+            background: var(--cyber-cyan);
+            color: var(--text-dark);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+            text-shadow: none;
         }
 
-        button[type="submit"]:active {
-            transform: translateY(1px);
+        button[type="submit"]:active:not(:disabled) {
+            transform: scale(0.99);
         }
 
         button:disabled {
-            background-color: #9ca3af !important;
-            border-bottom-color: #6b7280 !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: rgba(255, 255, 255, 0.2) !important;
             cursor: not-allowed;
+            box-shadow: none !important;
         }
 
-        /* Alerts */
+        /* Glass Neon Warning Alerts */
         .alert {
-            padding: 14px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 16px;
+            border-radius: 0;
+            margin-bottom: 25px;
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: 600;
             display: none;
-            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            animation: glitchIn 0.4s ease;
         }
 
         .alert-success {
-            background-color: var(--income-bg);
-            color: var(--income-color);
-            border: 1px solid #a7f3d0;
+            background: rgba(57, 255, 20, 0.08);
+            color: var(--cyber-green);
+            border: 1px solid var(--cyber-green);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
         }
 
         .alert-error {
-            background-color: var(--expense-bg);
-            color: var(--expense-color);
-            border: 1px solid #fecaca;
+            background: rgba(255, 0, 85, 0.08);
+            color: var(--cyber-pink);
+            border: 1px solid var(--cyber-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
         }
 
-        /* Loading Spinner */
+        /* Neon Buffer Spinner */
         .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(0, 240, 255, 0.2);
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            border-top-color: var(--cyber-cyan);
+            animation: spin 0.8s linear infinite;
             display: none;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes glitchIn {
+            0% { opacity: 0; transform: scaleY(0); filter: hue-rotate(90deg); }
+            50% { opacity: 0.5; transform: scaleY(1.1); }
+            100% { opacity: 1; transform: scaleY(1); filter: hue-rotate(0deg); }
         }
 
-        /* Responsive */
         @media (max-width: 480px) {
             .form-row {
                 flex-direction: column;
                 gap: 0;
             }
             body {
-                padding: 10px;
+                padding: 15px 10px;
             }
             .header {
-                padding: 24px 16px;
+                padding: 25px 15px;
             }
             form {
-                padding: 20px 16px;
+                padding: 20px 15px;
             }
         }
     </style>
@@ -301,78 +405,79 @@
 
 <div class="container">
     <div class="header">
-        <h1>💈 บันทึกรับ-จ่ายร้านตัดผม</h1>
-        <p>ระบบจัดการข้อมูลการเงินประจำวันอัตโนมัติ</p>
+        <h1>⚡ BARBER_OS.v2</h1>
+        <p>TRANSACTION LOGGING MODULE</p>
+        <div class="scanline"></div>
     </div>
 
     <form id="barberForm">
-        <!-- แจ้งเตือนสถานะ -->
-        <div id="alertSuccess" class="alert alert-success">🎉 บันทึกข้อมูลลง Google Sheet สำเร็จ!</div>
-        <div id="alertError" class="alert alert-error">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+        <!-- มอนิเตอร์แจ้งสถานะการบันทึกข้อมูล -->
+        <div id="alertSuccess" class="alert alert-success">>> SUCCESS: บันทึกข้อมูลเข้าสู่อาร์เรย์สำเร็จ [ SHEET_UPDATED ]</div>
+        <div id="alertError" class="alert alert-error">>> ERROR: การเชื่อมต่อล้มเหลว กรุณาตรวจสอบเว็บแอปสคริปต์</div>
 
         <!-- 1. ประเภทรายการ -->
         <div class="form-group">
-            <label>ประเภทรายการ</label>
+            <label>SYS_TYPE // ประเภทรายการ</label>
             <div class="type-toggle">
                 <div class="type-option">
                     <input type="radio" id="type-income" name="transaction_type" value="รายรับ" checked>
-                    <label for="type-income">💸 รายรับ</label>
+                    <label for="type-income">INCOME // รายรับ</label>
                 </div>
                 <div class="type-option">
                     <input type="radio" id="type-expense" name="transaction_type" value="รายจ่าย">
-                    <label for="type-expense">📉 รายจ่าย</label>
+                    <label for="type-expense">EXPENSE // รายจ่าย</label>
                 </div>
             </div>
         </div>
 
-        <!-- วันที่และเวลา (แถวเดียวกัน) -->
+        <!-- วันที่และเวลาโครงสร้างฟิวเจอร์ริสติก -->
         <div class="form-row">
             <!-- 2. วันที่ -->
             <div class="form-group">
-                <label for="date">วันที่</label>
+                <label for="date">DATE // วันที่</label>
                 <input type="date" id="date" name="date" required>
             </div>
             <!-- 3. เวลา -->
             <div class="form-group">
-                <label for="time">เวลา</label>
+                <label for="time">TIME // เวลา</label>
                 <input type="time" id="time" name="time" required>
             </div>
         </div>
 
         <!-- 4. หมวดหมู่ -->
         <div class="form-group">
-            <label for="category">หมวดหมู่รายการ</label>
+            <label for="category">CATEGORY // หมวดหมู่รายการ</label>
             <select id="category" name="category" required>
-                <!-- ตัวเลือกจะถูกเปลี่ยนตาม "ประเภทรายการ" ด้วย JavaScript -->
+                <!-- ควบคุมการแสดงผลแบบแมทริกซ์โดย JavaScript -->
             </select>
         </div>
 
         <!-- 5. ชื่อช่างผู้ให้บริการ -->
         <div class="form-group">
-            <label for="barber_name">ชื่อช่างผู้ให้บริการ (Barber)</label>
+            <label for="barber_name">OPERATOR // ชื่อช่างผู้ให้บริการ</label>
             <select id="barber_name" name="barber_name">
-                <option value="ส่วนกลาง/ร้าน">ส่วนกลาง / ร้าน</option>
-                <option value="ช่างเอ">ช่างเอ (Barber A)</option>
-                <option value="ช่างบี">ช่างบี (Barber B)</option>
-                <option value="ช่างซี">ช่างซี (Barber C)</option>
-                <option value="-">- (กรณีไม่มีช่าง / รายจ่าย)</option>
+                <option value="ส่วนกลาง/ร้าน">ส่วนกลาง / ร้าน (MAIN_UNIT)</option>
+                <option value="ช่างเอ">ช่างเอ (BARBER_A)</option>
+                <option value="ช่างบี">ช่างบี (BARBER_B)</option>
+                <option value="ช่างซี">ช่างซี (BARBER_C)</option>
+                <option value="-">- (ไม่มีส่วนเกี่ยวข้อง / รายจ่าย)</option>
             </select>
         </div>
 
         <!-- 6. ช่องทางการชำระเงิน -->
         <div class="form-group">
-            <label for="payment_method">ช่องทางการชำระเงิน</label>
+            <label for="payment_method">GATEWAY // ช่องทางการชำระเงิน</label>
             <select id="payment_method" name="payment_method" required>
-                <option value="เงินสด">💵 เงินสด</option>
-                <option value="โอนเงินผ่านธนาคาร">📱 โอนเงินผ่านธนาคาร (QR Code)</option>
-                <option value="บัตรเครดิต">💳 บัตรเครดิต</option>
-                <option value="อื่นๆ">기 อื่นๆ</option>
+                <option value="เงินสด">💵 CASH // เงินสด</option>
+                <option value="โอนเงินผ่านธนาคาร">📱 E-PAYMENT // โอนผ่านธนาคาร</option>
+                <option value="บัตรเครดิต">💳 CREDIT CARD // บัตรเครดิต</option>
+                <option value="อื่นๆ">기 EXTERNAL // อื่นๆ</option>
             </select>
         </div>
 
         <!-- 7. จำนวนเงิน -->
         <div class="form-group">
-            <label for="amount">จำนวนเงิน</label>
+            <label for="amount">NET_AMOUNT // จำนวนเงิน</label>
             <div class="amount-container">
                 <input type="number" id="amount" name="amount" placeholder="0.00" min="0.01" step="any" required>
             </div>
@@ -380,25 +485,25 @@
 
         <!-- 8. รายละเอียดเพิ่มเติม -->
         <div class="form-group">
-            <label for="description">รายละเอียดเพิ่มเติม</label>
-            <textarea id="description" name="description" placeholder="เช่น ค่าตัดผมสไตล์วินเทจ, ค่าทำสีผมออร์แกนิก, ซื้อผ้าขนหนูเพิ่ม..."></textarea>
+            <label for="description">DATA_LOG // รายละเอียดเพิ่มเติม</label>
+            <textarea id="description" name="description" placeholder="ระบุรายละเอียดทางกายภาพหรือบริการเสริมเพิ่มเติมที่นี่..."></textarea>
         </div>
 
-        <!-- ปุ่มกดส่งข้อมูล -->
+        <!-- ปุ่มประมวลผลการจัดส่งข้อมูล -->
         <button type="submit" id="submitBtn">
             <div id="spinner" class="spinner"></div>
-            <span id="btnText">💾 บันทึกรายการ</span>
+            <span id="btnText">EXECUTE_LOG // บันทึกรายการ</span>
         </button>
     </form>
 </div>
 
 <script>
-    // ==========================================
-    // CONFIGURATION: วาง URL ของ Web App ตรงนี้
-    // ==========================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMLnhRGLPFZu6bLLeNLDGiz2xcCwY2yuuwl52H3X-sGjGIuwuZX6fzQypnwo6T5WxynA/exec";
+    // =========================================================================
+    // CONFIGURATION MODULE: วาง URL ของ Google Apps Script ที่ Deploy แบบ Web App ลงที่นี่
+    // =========================================================================
+    const SCRIPT_URL = "วาง_URL_ของ_GOOGLE_APPS_SCRIPT_ที่นี่";
 
-    // หมวดหมู่สำหรับสลับเปลี่ยนตามประเภทรายการ
+    // ฐานข้อมูลประเภทของงานบริการอิงตามคู่มือที่กำหนด
     const categories = {
         "รายรับ": [
             "ค่าบริการตัดผมชาย/หญิง",
@@ -418,7 +523,7 @@
         ]
     };
 
-    // อัปเดตตัวเลือกหมวดหมู่ให้สอดคล้องกับประเภทรายการ
+    // อัปเดตรายการหมวดหมู่แบบไดนามิกให้สอดคล้องกับตัวเลือก (Matrix Update)
     function updateCategories() {
         const type = document.querySelector('input[name="transaction_type"]:checked').value;
         const categorySelect = document.getElementById('category');
@@ -431,7 +536,7 @@
             categorySelect.appendChild(option);
         });
 
-        // ถ้าเลือกรายจ่าย ให้ปรับชื่อช่างเป็น "-" อัตโนมัติ เพื่อความสะดวกรวดเร็ว
+        // หากเป็นโมดูลรายจ่าย จะเซ็ตค่าผู้ปฏิบัติงานเป็น "-" โดยอัตโนมัติ เพื่อเสถียรภาพความเร็ว
         const barberSelect = document.getElementById('barber_name');
         if (type === "รายจ่าย") {
             barberSelect.value = "-";
@@ -440,34 +545,32 @@
         }
     }
 
-    // ตั้งค่าเริ่มต้น วันที่และเวลาปัจจุบัน
+    // ฟังก์ชันช่วยดึงค่าเวลาปัจจุบันของอุปกรณ์เพื่อกรอกลงข้อมูลฟอร์ม
     function setDefaultDateTime() {
         const now = new Date();
         
-        // ฟอร์แมตวันที่ให้อยู่ในรูปแบบ YYYY-MM-DD ตามมาตรฐาน Timezone ท้องถิ่น
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         document.getElementById('date').value = `${year}-${month}-${day}`;
 
-        // ฟอร์แมตเวลาให้อยู่ในรูปแบบ HH:MM
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         document.getElementById('time').value = `${hours}:${minutes}`;
     }
 
-    // ลงทะเบียน Event Listeners
+    // ผูกคำสั่งรับสัญญานอินพุตบนอินเทอร์เฟซ
     document.querySelectorAll('input[name="transaction_type"]').forEach(radio => {
         radio.addEventListener('change', updateCategories);
     });
 
-    // เริ่มทำงานครั้งแรก
+    // เริ่มวงจรการทำงานฟอร์มเมื่อระบบโหลดสภาพแวดล้อมเสร็จสิ้น
     window.addEventListener('DOMContentLoaded', () => {
         setDefaultDateTime();
         updateCategories();
     });
 
-    // การส่งข้อมูลฟอร์มไปยัง Google Apps Script
+    // ตัวประมวลผลส่งข้อมูล Payload ออกนอกเครือข่ายไปยัง Google Sheets
     document.getElementById('barberForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -478,16 +581,18 @@
         const alertSuccess = document.getElementById('alertSuccess');
         const alertError = document.getElementById('alertError');
 
-        // ซ่อน Alert ก่อนหน้า
         alertSuccess.style.display = 'none';
         alertError.style.display = 'none';
 
-        // เปิดโหมดกำลังโหลด (Loading State)
+        // ล็อกปุ่มกดป้องกันเฟรมทับซ้อน (Loading UI State)
         submitBtn.disabled = true;
-        spinner.style.display = 'block';
-        btnText.textContent = 'กำลังบันทึกข้อมูล...';
+        spinner.style.display = 'inline-block';
+        submitBtn.style.display = 'flex';
+        submitBtn.style.justifyContent = 'center';
+        submitBtn.style.alignItems = 'center';
+        submitBtn.style.gap = '15px';
+        btnText.textContent = 'TRANSMITTING_DATA...';
 
-        // รวบรวมข้อมูลตามโครงสร้างภาพถ่าย
         const formData = {
             date: document.getElementById('date').value,
             time: document.getElementById('time').value,
@@ -500,33 +605,30 @@
         };
 
         if (SCRIPT_URL === "วาง_URL_ของ_GOOGLE_APPS_SCRIPT_ที่นี่" || SCRIPT_URL === "") {
-            alert('กรุณาใส่ Web App URL ของ Google Apps Script ในโค้ดก่อนใช้งานครับ!');
+            alert('CRITICAL_ERROR: ไม่พบตำแหน่งของ SCRIPT_URL กรุณาใส่ลิงก์สคริปต์ของท่านก่อนทำการรันคำสั่ง');
             resetBtn();
             return;
         }
 
-        // ส่งข้อมูลด้วยเทคนิค text/plain เพื่อหลีกเลี่ยงปัญหา CORS Preflight บนหน้าเว็บจำลอง
+        // เชื่อมโยงผ่าน Fetch API รูปแบบส่งตรงเข้าสู่คลาวด์ชีต
         fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // แนะนำสำหรับ Google Apps Script หากต้องการยิงตรงโดยไม่ติด CORS
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'text/plain; charset=UTF-8'
             },
             body: JSON.stringify(formData)
         })
         .then(response => {
-            // เนื่องจากใช้โหมด no-cors การตอบกลับจะถูกจำกัด แต่ข้อมูลจะเข้าฝั่ง Sheet เรียบร้อย
             alertSuccess.style.display = 'block';
             form.reset();
             setDefaultDateTime();
             updateCategories();
             resetBtn();
-            
-            // เลื่อนหน้าจอขึ้นไปดูข้อความแจ้งเตือน
             window.scrollTo({ top: 0, behavior: 'smooth' });
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Transmission Failure:', error);
             alertError.style.display = 'block';
             resetBtn();
         });
@@ -534,7 +636,8 @@
         function resetBtn() {
             submitBtn.disabled = false;
             spinner.style.display = 'none';
-            btnText.textContent = '💾 บันทึกรายการ';
+            submitBtn.style.display = 'block';
+            btnText.textContent = 'EXECUTE_LOG // บันทึกรายการ';
         }
     });
 </script>
