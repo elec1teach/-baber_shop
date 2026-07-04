@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกรายรับ-รายจ่าย ร้านตัดผม</title>
+    <style>
+        :root {
+            --bg-gradient-start: #111827;
+            --bg-gradient-end: #1f2937;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-light: #f9fafb;
+            --text-muted: #4b5563;
+            --primary: #b45309; /* Vintage Barber Amber/Gold */
+            --primary-hover: #92400e;
+            --income-color: #10b981;
+            --income-bg: #ecfdf5;
+            --expense-color: #ef4444;
+            --expense-bg: #fef2f2;
+            --border-color: #e5e7eb;
+            --focus-ring: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', 'Sarabun', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #111827;
+            color: var(--text-light);
+            padding: 30px 24px;
+            text-align: center;
+            border-bottom: 4px solid var(--primary);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ef4444 25%, #f9fafb 25%, #f9fafb 50%, #3b82f6 50%, #3b82f6 75%, #f9fafb 75%);
+            background-size: 40px 4px;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        form {
+            padding: 28px 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        /* Input Styles */
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--text-dark);
+            background-color: #f9fafb;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.15);
+        }
+
+        /* Transaction Type Toggle (Segmented Control) */
+        .type-toggle {
+            display: flex;
+            background: #f3f4f6;
+            padding: 4px;
+            border-radius: 10px;
+            gap: 4px;
+        }
+
+        .type-option {
+            flex: 1;
+            text-align: center;
+        }
+
+        .type-option input[type="radio"] {
+            display: none;
+        }
+
+        .type-option label {
+            display: block;
+            padding: 12px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        #type-income:checked + label {
+            background: var(--income-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        }
+
+        #type-expense:checked + label {
+            background: var(--expense-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Row Layout for Date and Time */
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Currency Container */
+        .amount-container {
+            position: relative;
+        }
+
+        .amount-container input {
+            padding-right: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .amount-container::after {
+            content: 'บาท';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background-color: #111827;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        button[type="submit"]:hover {
+            background-color: #1f2937;
+            transform: translateY(-1px);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            background-color: #9ca3af !important;
+            border-bottom-color: #6b7280 !important;
+            cursor: not-allowed;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-success {
+            background-color: var(--income-bg);
+            color: var(--income-color);
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background-color: var(--expense-bg);
+            color: var(--expense-color);
+            border: 1px solid #fecaca;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 24px 16px;
+            }
+            form {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>💈 บันทึกรับ-จ่ายร้านตัดผม</h1>
+        <p>ระบบจัดการข้อมูลการเงินประจำวันอัตโนมัติ</p>
+    </div>
+
+    <form id="barberForm">
+        <!-- แจ้งเตือนสถานะ -->
+        <div id="alertSuccess" class="alert alert-success">🎉 บันทึกข้อมูลลง Google Sheet สำเร็จ!</div>
+        <div id="alertError" class="alert alert-error">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+
+        <!-- 1. ประเภทรายการ -->
+        <div class="form-group">
+            <label>ประเภทรายการ</label>
+            <div class="type-toggle">
+                <div class="type-option">
+                    <input type="radio" id="type-income" name="transaction_type" value="รายรับ" checked>
+                    <label for="type-income">💸 รายรับ</label>
+                </div>
+                <div class="type-option">
+                    <input type="radio" id="type-expense" name="transaction_type" value="รายจ่าย">
+                    <label for="type-expense">📉 รายจ่าย</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- วันที่และเวลา (แถวเดียวกัน) -->
+        <div class="form-row">
+            <!-- 2. วันที่ -->
+            <div class="form-group">
+                <label for="date">วันที่</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <!-- 3. เวลา -->
+            <div class="form-group">
+                <label for="time">เวลา</label>
+                <input type="time" id="time" name="time" required>
+            </div>
+        </div>
+
+        <!-- 4. หมวดหมู่ -->
+        <div class="form-group">
+            <label for="category">หมวดหมู่รายการ</label>
+            <select id="category" name="category" required>
+                <!-- ตัวเลือกจะถูกเปลี่ยนตาม "ประเภทรายการ" ด้วย JavaScript -->
+            </select>
+        </div>
+
+        <!-- 5. ชื่อช่างผู้ให้บริการ -->
+        <div class="form-group">
+            <label for="barber_name">ชื่อช่างผู้ให้บริการ (Barber)</label>
+            <select id="barber_name" name="barber_name">
+                <option value="ส่วนกลาง/ร้าน">ส่วนกลาง / ร้าน</option>
+                <option value="ช่างเอ">ช่างเอ (Barber A)</option>
+                <option value="ช่างบี">ช่างบี (Barber B)</option>
+                <option value="ช่างซี">ช่างซี (Barber C)</option>
+                <option value="-">- (กรณีไม่มีช่าง / รายจ่าย)</option>
+            </select>
+        </div>
+
+        <!-- 6. ช่องทางการชำระเงิน -->
+        <div class="form-group">
+            <label for="payment_method">ช่องทางการชำระเงิน</label>
+            <select id="payment_method" name="payment_method" required>
+                <option value="เงินสด">💵 เงินสด</option>
+                <option value="โอนเงินผ่านธนาคาร">📱 โอนเงินผ่านธนาคาร (QR Code)</option>
+                <option value="บัตรเครดิต">💳 บัตรเครดิต</option>
+                <option value="อื่นๆ">기 อื่นๆ</option>
+            </select>
+        </div>
+
+        <!-- 7. จำนวนเงิน -->
+        <div class="form-group">
+            <label for="amount">จำนวนเงิน</label>
+            <div class="amount-container">
+                <input type="number" id="amount" name="amount" placeholder="0.00" min="0.01" step="any" required>
+            </div>
+        </div>
+
+        <!-- 8. รายละเอียดเพิ่มเติม -->
+        <div class="form-group">
+            <label for="description">รายละเอียดเพิ่มเติม</label>
+            <textarea id="description" name="description" placeholder="เช่น ค่าตัดผมสไตล์วินเทจ, ค่าทำสีผมออร์แกนิก, ซื้อผ้าขนหนูเพิ่ม..."></textarea>
+        </div>
+
+        <!-- ปุ่มกดส่งข้อมูล -->
+        <button type="submit" id="submitBtn">
+            <div id="spinner" class="spinner"></div>
+            <span id="btnText">💾 บันทึกรายการ</span>
+        </button>
+    </form>
+</div>
+
+<script>
+    // ==========================================
+    // CONFIGURATION: วาง URL ของ Web App ตรงนี้
+    // ==========================================
+    const SCRIPT_URL = "วาง_URL_ของ_GOOGLE_APPS_SCRIPT_ที่นี่";
+
+    // หมวดหมู่สำหรับสลับเปลี่ยนตามประเภทรายการ
+    const categories = {
+        "รายรับ": [
+            "ค่าบริการตัดผมชาย/หญิง",
+            "ค่าบริการโกนหนวด/กันไรผม",
+            "ค่าทำสีผม/เคมี",
+            "ค่าสระ-ไดร์/เซ็ตทรง",
+            "ขายผลิตภัณฑ์ดูแลผม (แชมพู/เซรั่ม/แว็กซ์)",
+            "รายรับอื่นๆ"
+        ],
+        "รายจ่าย": [
+            "ซื้อของเข้าร้าน/น้ำยาเคมี/อุปกรณ์",
+            "ค่าน้ำ / ค่าไฟ / ค่าอินเทอร์เน็ต",
+            "ค่าเช่าร้าน / ค่าสถานที่",
+            "ค่าการตลาด / โฆษณาออนไลน์",
+            "ค่าแรง / ค่าคอมมิชชั่นช่าง",
+            "ค่าใช้จ่ายเบ็ดเตล็ด"
+        ]
+    };
+
+    // อัปเดตตัวเลือกหมวดหมู่ให้สอดคล้องกับประเภทรายการ
+    function updateCategories() {
+        const type = document.querySelector('input[name="transaction_type"]:checked').value;
+        const categorySelect = document.getElementById('category');
+        categorySelect.innerHTML = '';
+
+        categories[type].forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            categorySelect.appendChild(option);
+        });
+
+        // ถ้าเลือกรายจ่าย ให้ปรับชื่อช่างเป็น "-" อัตโนมัติ เพื่อความสะดวกรวดเร็ว
+        const barberSelect = document.getElementById('barber_name');
+        if (type === "รายจ่าย") {
+            barberSelect.value = "-";
+        } else {
+            barberSelect.value = "ส่วนกลาง/ร้าน";
+        }
+    }
+
+    // ตั้งค่าเริ่มต้น วันที่และเวลาปัจจุบัน
+    function setDefaultDateTime() {
+        const now = new Date();
+        
+        // ฟอร์แมตวันที่ให้อยู่ในรูปแบบ YYYY-MM-DD ตามมาตรฐาน Timezone ท้องถิ่น
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        document.getElementById('date').value = `${year}-${month}-${day}`;
+
+        // ฟอร์แมตเวลาให้อยู่ในรูปแบบ HH:MM
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('time').value = `${hours}:${minutes}`;
+    }
+
+    // ลงทะเบียน Event Listeners
+    document.querySelectorAll('input[name="transaction_type"]').forEach(radio => {
+        radio.addEventListener('change', updateCategories);
+    });
+
+    // เริ่มทำงานครั้งแรก
+    window.addEventListener('DOMContentLoaded', () => {
+        setDefaultDateTime();
+        updateCategories();
+    });
+
+    // การส่งข้อมูลฟอร์มไปยัง Google Apps Script
+    document.getElementById('barberForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
+        const alertSuccess = document.getElementById('alertSuccess');
+        const alertError = document.getElementById('alertError');
+
+        // ซ่อน Alert ก่อนหน้า
+        alertSuccess.style.display = 'none';
+        alertError.style.display = 'none';
+
+        // เปิดโหมดกำลังโหลด (Loading State)
+        submitBtn.disabled = true;
+        spinner.style.display = 'block';
+        btnText.textContent = 'กำลังบันทึกข้อมูล...';
+
+        // รวบรวมข้อมูลตามโครงสร้างภาพถ่าย
+        const formData = {
+            date: document.getElementById('date').value,
+            time: document.getElementById('time').value,
+            type: document.querySelector('input[name="transaction_type"]:checked').value,
+            category: document.getElementById('category').value,
+            description: document.getElementById('description').value || '-',
+            amount: parseFloat(document.getElementById('amount').value),
+            payment_method: document.getElementById('payment_method').value,
+            barber_name: document.getElementById('barber_name').value
+        };
+
+        if (SCRIPT_URL === "วาง_URL_ของ_GOOGLE_APPS_SCRIPT_ที่นี่" || SCRIPT_URL === "") {
+            alert('กรุณาใส่ Web App URL ของ Google Apps Script ในโค้ดก่อนใช้งานครับ!');
+            resetBtn();
+            return;
+        }
+
+        // ส่งข้อมูลด้วยเทคนิค text/plain เพื่อหลีกเลี่ยงปัญหา CORS Preflight บนหน้าเว็บจำลอง
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // แนะนำสำหรับ Google Apps Script หากต้องการยิงตรงโดยไม่ติด CORS
+            headers: {
+                'Content-Type': 'text/plain; charset=UTF-8'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            // เนื่องจากใช้โหมด no-cors การตอบกลับจะถูกจำกัด แต่ข้อมูลจะเข้าฝั่ง Sheet เรียบร้อย
+            alertSuccess.style.display = 'block';
+            form.reset();
+            setDefaultDateTime();
+            updateCategories();
+            resetBtn();
+            
+            // เลื่อนหน้าจอขึ้นไปดูข้อความแจ้งเตือน
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alertError.style.display = 'block';
+            resetBtn();
+        });
+
+        function resetBtn() {
+            submitBtn.disabled = false;
+            spinner.style.display = 'none';
+            btnText.textContent = '💾 บันทึกรายการ';
+        }
+    });
+</script>
+
+</body>
+</html>
