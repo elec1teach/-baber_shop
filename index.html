@@ -338,6 +338,33 @@
             box-shadow: none !important;
         }
 
+        /* CSS สำหรับปุ่มตรวจสอบ Google Sheet (Cyber Pink) */
+        .btn-secondary {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 0, 85, 0.05);
+            color: var(--cyber-pink);
+            border: 1px dashed var(--cyber-pink);
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cyber-pink);
+            color: var(--text-dark);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+            border: 1px solid var(--cyber-pink);
+            text-shadow: none;
+        }
+
         /* Glass Neon Warning Alerts */
         .alert {
             padding: 16px;
@@ -494,16 +521,23 @@
             <div id="spinner" class="spinner"></div>
             <span id="btnText">EXECUTE_LOG // บันทึกรายการ</span>
         </button>
+
+        <!-- ปุ่มตรวจสอบข้อมูล Google Sheet -->
+        <!-- นำลิงก์ชีตของคุณมาวางแทนที่คำว่า วาง_ลิงก์_GOOGLE_SHEET_ของคุณที่นี่ -->
+        <a href="https://docs.google.com/spreadsheets/d/1YZUXOdbKFF2dzQPtzcLL0zNAmE6nWF9beiLcS22aiRM/edit?usp=sharing" target="_blank" class="btn-secondary">
+            DATABASE_LINK // ตรวจสอบรายรับ-รายจ่าย
+        </a>
+
     </form>
 </div>
 
 <script>
     // =========================================================================
-    // CONFIGURATION MODULE: วาง URL ของ Google Apps Script ที่ Deploy แบบ Web App ลงที่นี่
+    // CONFIGURATION MODULE
     // =========================================================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMLnhRGLPFZu6bLLeNLDGiz2xcCwY2yuuwl52H3X-sGjGIuwuZX6fzQypnwo6T5WxynA/exec";
 
-    // ฐานข้อมูลประเภทของงานบริการอิงตามคู่มือที่กำหนด
+    // ฐานข้อมูลประเภทของงานบริการ
     const categories = {
         "รายรับ": [
             "ค่าบริการตัดผมชาย/หญิง",
@@ -523,7 +557,6 @@
         ]
     };
 
-    // อัปเดตรายการหมวดหมู่แบบไดนามิกให้สอดคล้องกับตัวเลือก (Matrix Update)
     function updateCategories() {
         const type = document.querySelector('input[name="transaction_type"]:checked').value;
         const categorySelect = document.getElementById('category');
@@ -536,7 +569,6 @@
             categorySelect.appendChild(option);
         });
 
-        // หากเป็นโมดูลรายจ่าย จะเซ็ตค่าผู้ปฏิบัติงานเป็น "-" โดยอัตโนมัติ เพื่อเสถียรภาพความเร็ว
         const barberSelect = document.getElementById('barber_name');
         if (type === "รายจ่าย") {
             barberSelect.value = "-";
@@ -545,7 +577,6 @@
         }
     }
 
-    // ฟังก์ชันช่วยดึงค่าเวลาปัจจุบันของอุปกรณ์เพื่อกรอกลงข้อมูลฟอร์ม
     function setDefaultDateTime() {
         const now = new Date();
         
@@ -559,18 +590,15 @@
         document.getElementById('time').value = `${hours}:${minutes}`;
     }
 
-    // ผูกคำสั่งรับสัญญานอินพุตบนอินเทอร์เฟซ
     document.querySelectorAll('input[name="transaction_type"]').forEach(radio => {
         radio.addEventListener('change', updateCategories);
     });
 
-    // เริ่มวงจรการทำงานฟอร์มเมื่อระบบโหลดสภาพแวดล้อมเสร็จสิ้น
     window.addEventListener('DOMContentLoaded', () => {
         setDefaultDateTime();
         updateCategories();
     });
 
-    // ตัวประมวลผลส่งข้อมูล Payload ออกนอกเครือข่ายไปยัง Google Sheets
     document.getElementById('barberForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -584,7 +612,6 @@
         alertSuccess.style.display = 'none';
         alertError.style.display = 'none';
 
-        // ล็อกปุ่มกดป้องกันเฟรมทับซ้อน (Loading UI State)
         submitBtn.disabled = true;
         spinner.style.display = 'inline-block';
         submitBtn.style.display = 'flex';
@@ -604,13 +631,6 @@
             barber_name: document.getElementById('barber_name').value
         };
 
-        if (SCRIPT_URL === "วาง_URL_ของ_GOOGLE_APPS_SCRIPT_ที่นี่" || SCRIPT_URL === "") {
-            alert('CRITICAL_ERROR: ไม่พบตำแหน่งของ SCRIPT_URL กรุณาใส่ลิงก์สคริปต์ของท่านก่อนทำการรันคำสั่ง');
-            resetBtn();
-            return;
-        }
-
-        // เชื่อมโยงผ่าน Fetch API รูปแบบส่งตรงเข้าสู่คลาวด์ชีต
         fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
